@@ -1,5 +1,5 @@
+import ProfilePage from "@/app/components/MainSection";
 import React from "react";
-import ProfilePage from "./components/MainSection";
 
 const page = () => {
   return (
