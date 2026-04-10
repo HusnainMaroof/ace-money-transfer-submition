@@ -11,12 +11,13 @@ type Post = {
   src: string;
   likes: string;
   caption: string;
+  res?: "1080x1920" | "1920x1080"; // Added resolution property to type
 };
 
 // --- MOCK DATA ---
 const PROFILE_USER = {
   username: "ace money transfer",
-
+  subtitle: "Visual Identity & Motion",
   avatar: "/photos/logo.svg",
 };
 
@@ -31,35 +32,35 @@ const POSTS: Post[] = [
   {
     id: 2,
     type: "image",
+    src: "/photos/img4.png",
+    likes: "5.1k",
+    caption: "Concrete and wood textures blending seamlessly.",
+  },
+  {
+    id: 3,
+    type: "image",
     src: "/photos/img2.png",
     likes: "3.8k",
     caption: "Interior details that matter. 🛋️",
   },
   {
-    id: 3,
+    id: 4,
     type: "image",
     src: "/photos/img3.jpeg",
     likes: "5.1k",
     caption: "Concrete and wood textures blending seamlessly.",
   },
   {
-    id: 4,
-    type: "image",
-    src: "/photos/img4.png",
-    likes: "5.1k",
-    caption: "Concrete and wood textures blending seamlessly.",
-  },
-  {
     id: 5,
     type: "image",
-    src: "/photos/img5.webp",
+    src: "/photos/img6.webp",
     likes: "5.1k",
     caption: "Concrete and wood textures blending seamlessly.",
   },
   {
     id: 6,
     type: "image",
-    src: "/photos/img6.webp",
+    src: "/photos/img5.webp",
     likes: "5.1k",
     caption: "Concrete and wood textures blending seamlessly.",
   },
@@ -69,13 +70,15 @@ const POSTS: Post[] = [
     src: "/videos/AMT IS.mp4",
     likes: "5.1k",
     caption: "Vertical motion study - Abstract flows.",
+    res: "1080x1920",
   },
   {
     id: 8,
     type: "video",
     src: "/videos/AMT L.mp4",
     likes: "5.1k",
-    caption: "Vertical motion study - Abstract flows.",
+    caption: "Horizontal motion study - Abstract flows.",
+    res: "1920x1080",
   },
 ];
 
@@ -106,7 +109,11 @@ export default function ProfilePage() {
 
   // --- FILTERS ---
   const imagePosts = POSTS.filter((p) => p.type === "image");
-  const videoPosts = POSTS.filter((p) => p.type === "video");
+
+  // Filter videos dynamically based on the selected resolution tab
+  const videoPosts = POSTS.filter(
+    (p) => p.type === "video" && p.res === motionResolution,
+  );
 
   // --- ANIMATION VARIANTS ---
   const staggerContainer: Variants = {
@@ -166,7 +173,7 @@ export default function ProfilePage() {
           </motion.div>
 
           <div className="flex flex-col items-center md:items-start w-full">
-            <h1 className="text-3xl md:text-4xl font-light text-white tracking-[0.2em]  cursor-default">
+            <h1 className="text-3xl md:text-4xl font-light text-white tracking-[0.2em] cursor-default">
               {PROFILE_USER.username}
             </h1>
           </div>
@@ -215,7 +222,7 @@ export default function ProfilePage() {
                     <motion.div
                       key={post.id}
                       variants={gridItem}
-                      // Changed from aspect-square to aspect-[9/16] to enforce 1080x1920 ratio
+                      // Enforce 1080x1920 ratio
                       className="aspect-[9/16] bg-neutral-900 relative group cursor-pointer overflow-hidden rounded-xl"
                       onClick={() => setSelectedPost(post)}
                     >
@@ -350,6 +357,19 @@ export default function ProfilePage() {
                     className="max-w-full max-h-[75vh] object-contain rounded-2xl shadow-2xl"
                   />
                 )}
+              </div>
+
+              {/* Caption Box */}
+              <div className="mt-8 md:mt-10 max-w-2xl text-center px-4">
+                <p className="text-white text-sm md:text-base font-light tracking-wide leading-relaxed">
+                  {selectedPost.caption}
+                </p>
+                <div className="flex items-center justify-center gap-2 mt-4 text-neutral-500">
+                  <Heart size={14} className="fill-neutral-500" />
+                  <span className="text-xs uppercase tracking-widest">
+                    {selectedPost.likes}
+                  </span>
+                </div>
               </div>
             </motion.div>
           </motion.div>
