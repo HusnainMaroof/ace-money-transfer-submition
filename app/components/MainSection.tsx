@@ -274,10 +274,11 @@ export default function ProfilePage() {
                   variants={staggerContainer}
                   initial="hidden"
                   animate="show"
-                  className={`grid gap-2 md:gap-4 transition-all duration-500 ${motionResolution === "1080x1920" ? "grid-cols-2 md:grid-cols-3" : "grid-cols-1 md:grid-cols-2 max-w-4xl mx-auto w-full"}`}
+                  // Keep both vertical and horizontal videos vertically stacked and centered
+                  className="flex flex-col items-center gap-8 md:gap-12 w-full max-w-4xl mx-auto transition-all duration-500"
                 >
                   {videoPosts.length === 0 && (
-                    <div className="col-span-full py-12 text-center text-neutral-600 tracking-widest text-sm uppercase">
+                    <div className="w-full py-12 text-center text-neutral-600 tracking-widest text-sm uppercase">
                       No projects found for this resolution.
                     </div>
                   )}
@@ -285,24 +286,31 @@ export default function ProfilePage() {
                     <motion.div
                       key={post.id}
                       variants={gridItem}
-                      className={`${motionResolution === "1080x1920" ? "aspect-[9/16]" : "aspect-video"} bg-neutral-900 relative group cursor-pointer overflow-hidden rounded-xl transition-all duration-500`}
+                      className={`${
+                        motionResolution === "1080x1920"
+                          ? "aspect-[9/16] max-w-[280px] md:max-w-[340px]"
+                          : "aspect-video max-w-full"
+                      } w-full bg-neutral-900 relative group cursor-pointer overflow-hidden rounded-xl transition-all duration-500 shadow-2xl`}
                       onClick={() => setSelectedPost(post)}
                     >
                       <motion.video
-                        whileHover={{ scale: 1.05 }}
+                        whileHover={{ scale: 1.02 }}
                         transition={{ duration: 0.7, ease: customEase }}
                         src={post.src}
                         muted
                         loop
                         playsInline
                         autoPlay
-                        className="w-full h-full object-cover opacity-70 group-hover:opacity-90"
+                        className="w-full h-full object-cover opacity-80 group-hover:opacity-100"
                       />
 
                       {/* Frosted Play Icon Overlay */}
                       <div className="absolute inset-0 flex justify-center items-center pointer-events-none transition-transform duration-500 group-hover:scale-110">
-                        <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-black/30 backdrop-blur-md flex justify-center items-center border border-white/20 text-white shadow-xl">
-                          <Play className="ml-1 fill-white" size={24} />
+                        <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-black/40 backdrop-blur-md flex justify-center items-center border border-white/20 text-white shadow-xl">
+                          <Play
+                            className="ml-1 fill-white opacity-90"
+                            size={24}
+                          />
                         </div>
                       </div>
                     </motion.div>
@@ -333,43 +341,30 @@ export default function ProfilePage() {
               <X size={36} strokeWidth={1} />
             </button>
 
-            {/* Modal Content */}
+            {/* Modal Content - Captions Removed, Size Reduced */}
             <motion.div
               initial={{ scale: 0.95, opacity: 0, y: 15 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 15 }}
               transition={{ type: "spring", damping: 30, stiffness: 300 }}
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-[1200px] flex flex-col items-center justify-center cursor-default"
+              className="w-full max-w-[1000px] flex flex-col items-center justify-center cursor-default"
             >
-              <div className="relative flex items-center justify-center w-full max-h-[75vh]">
+              <div className="relative flex items-center justify-center w-full max-h-[70vh]">
                 {selectedPost.type === "video" ? (
                   <video
                     src={selectedPost.src}
                     controls
                     autoPlay
-                    className="max-w-full max-h-[75vh] object-contain rounded-xl shadow-2xl"
+                    className="w-[90vw] md:w-[70vw] max-w-[800px] max-h-[70vh] object-contain rounded-xl shadow-2xl mx-auto"
                   />
                 ) : (
                   <img
                     src={selectedPost.src}
                     alt="Project Details"
-                    className="max-w-full max-h-[75vh] object-contain rounded-2xl shadow-2xl"
+                    className="w-auto max-w-full max-h-[70vh] object-contain rounded-2xl shadow-2xl mx-auto"
                   />
                 )}
-              </div>
-
-              {/* Caption Box */}
-              <div className="mt-8 md:mt-10 max-w-2xl text-center px-4">
-                <p className="text-white text-sm md:text-base font-light tracking-wide leading-relaxed">
-                  {selectedPost.caption}
-                </p>
-                <div className="flex items-center justify-center gap-2 mt-4 text-neutral-500">
-                  <Heart size={14} className="fill-neutral-500" />
-                  <span className="text-xs uppercase tracking-widest">
-                    {selectedPost.likes}
-                  </span>
-                </div>
               </div>
             </motion.div>
           </motion.div>
