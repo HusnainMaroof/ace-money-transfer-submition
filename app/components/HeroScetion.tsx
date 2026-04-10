@@ -35,7 +35,8 @@ const GlitchText: React.FC<{ text: string }> = ({ text }) => {
 };
 
 export default function HeroSection() {
-  const ease = [0.76, 0, 0.24, 1];
+  // Explicitly typing the ease curve as a tuple to resolve TypeScript strictness
+  const customEase: [number, number, number, number] = [0.76, 0, 0.24, 1];
 
   return (
     <section className="relative min-h-screen bg-black flex items-center justify-center overflow-hidden py-20 lg:py-0">
@@ -53,7 +54,7 @@ export default function HeroSection() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.3, ease }}
+          transition={{ duration: 1, delay: 0.3, ease: customEase }}
           className="mb-6 flex items-center gap-4"
         >
           <div className="w-10 h-px bg-white/20" />
@@ -69,7 +70,11 @@ export default function HeroSection() {
               <motion.h1
                 initial={{ y: "100%" }}
                 animate={{ y: 0 }}
-                transition={{ duration: 1.2, delay: 0.5 + i * 0.1, ease }}
+                transition={{
+                  duration: 1.2,
+                  delay: 0.5 + i * 0.1,
+                  ease: customEase,
+                }}
                 className={`text-[15vw] lg:text-[10vw] leading-[0.8] tracking-[-0.04em] font-bold ${
                   i === 2 ? "text-neutral-800" : "text-white"
                 }`}
@@ -82,7 +87,7 @@ export default function HeroSection() {
             <motion.h1
               initial={{ y: "100%" }}
               animate={{ y: 0 }}
-              transition={{ duration: 1.2, delay: 0.85, ease }}
+              transition={{ duration: 1.2, delay: 0.85, ease: customEase }}
               className="text-[15vw] lg:text-[10vw] leading-[0.8] tracking-[-0.04em] text-white font-bold"
             >
               <GlitchText text="CREATOR" />
@@ -94,7 +99,7 @@ export default function HeroSection() {
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 1.2, ease }}
+          transition={{ duration: 1, delay: 1.2, ease: customEase }}
           className="flex flex-col sm:flex-row gap-8 sm:gap-20 items-start"
         >
           <div className="max-w-xs lg:max-w-sm">
@@ -129,7 +134,7 @@ export default function HeroSection() {
         </motion.div>
       </div>
 
-      {/* Vertical Scroll Line */}
+      {/* Vertical Scroll Indicator */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
