@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Heart, Grid, X, Film, Play } from "lucide-react";
+import { Heart, Grid, X, Film, Play, Lock, ArrowRight } from "lucide-react";
 import { motion, AnimatePresence, Variants } from "framer-motion";
 
 // --- TYPES ---
@@ -11,7 +11,7 @@ type Post = {
   src: string;
   likes: string;
   caption: string;
-  res?: "1080x1920" | "1920x1080"; // Added resolution property to type
+  res?: "1080x1920" | "1920x1080";
 };
 
 // --- MOCK DATA ---
@@ -20,6 +20,9 @@ const PROFILE_USER = {
   subtitle: "Visual Identity & Motion",
   avatar: "/photos/logo.svg",
 };
+
+// ** MOCK PASSWORD **
+const CORRECT_PASSWORD = "aamiradmin";
 
 const POSTS: Post[] = [
   {
@@ -94,6 +97,11 @@ export default function ProfilePage() {
     "1080x1920" | "1920x1080"
   >("1080x1920");
 
+  // --- AUTH STATES ---
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [password, setPassword] = useState("");
+  const [isError, setIsError] = useState(false);
+
   // --- HANDLERS ---
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -104,13 +112,32 @@ export default function ProfilePage() {
   }, []);
 
   useEffect(() => {
-    document.body.style.overflow = selectedPost ? "hidden" : "unset";
-  }, [selectedPost]);
+    // Prevent background scroll when any modal is open
+    if (selectedPost || !isAuthenticated) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [selectedPost, isAuthenticated]);
+
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (password === CORRECT_PASSWORD) {
+      setIsAuthenticated(true);
+      setIsError(false);
+    } else {
+      setIsError(true);
+      setPassword("");
+      // Reset error state after shake animation completes
+      setTimeout(() => setIsError(false), 500);
+    }
+  };
 
   // --- FILTERS ---
   const imagePosts = POSTS.filter((p) => p.type === "image");
-
-  // Filter videos dynamically based on the selected resolution tab
   const videoPosts = POSTS.filter(
     (p) => p.type === "video" && p.res === motionResolution,
   );
@@ -151,8 +178,81 @@ export default function ProfilePage() {
 
   return (
     <div className="bg-black min-h-screen text-neutral-200 font-sans antialiased selection:bg-neutral-800">
+      {/* PASSWORD POPUP MODAL */}
+      <AnimatePresence>
+        {!isAuthenticated && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-xl p-4"
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 20 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              className="bg-[#0f0f0f] border border-neutral-700 p-8 md:p-12 rounded-3xl flex flex-col items-center justify-center shadow-[0_0_60px_rgba(0,0,0,0.8)] w-full max-w-sm relative overflow-hidden"
+            >
+              {/* Subtle top highlight for depth */}
+              <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+
+              <div className="mb-6 border border-neutral-700 rounded-full p-4 bg-neutral-800/80 shadow-inner">
+                <Lock
+                  size={26}
+                  className="text-neutral-300"
+                  strokeWidth={1.5}
+                />
+              </div>
+              <h2 className="text-sm tracking-[0.3em] text-neutral-400 mb-10 uppercase text-center font-medium">
+                Protected Content
+              </h2>
+
+              <motion.form
+                onSubmit={handleLogin}
+                animate={isError ? { x: [-10, 10, -10, 10, 0] } : {}}
+                transition={{ duration: 0.4 }}
+                className="flex items-center border-b-2 border-neutral-700 pb-2 focus-within:border-neutral-300 transition-colors w-full"
+              >
+                <input
+                  type="password"
+                  placeholder="Enter Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="bg-transparent outline-none border-none w-full text-center tracking-[0.2em] text-white placeholder-neutral-600 font-light"
+                  autoFocus
+                />
+                <button
+                  type="submit"
+                  className="p-2 text-neutral-400 hover:text-white transition-colors cursor-pointer focus:outline-none"
+                  disabled={!password}
+                >
+                  <ArrowRight size={20} strokeWidth={1.5} />
+                </button>
+              </motion.form>
+
+              <div className="mt-6 h-4">
+                <AnimatePresence>
+                  {isError && (
+                    <motion.p
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="text-red-500 text-[10px] tracking-[0.2em] uppercase text-center"
+                    >
+                      Incorrect Password
+                    </motion.p>
+                  )}
+                </AnimatePresence>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <main className="w-full max-w-[935px] mx-auto pt-10 md:pt-16 pb-20 px-4 md:px-0">
-        {/* HEADER */}
+        {/* HEADER (Always Visible) */}
         <motion.header
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -163,166 +263,206 @@ export default function ProfilePage() {
             whileHover={{ scale: 1.02 }}
             className="w-[100px] h-[100px] md:w-[130px] md:h-[130px] shrink-0 rounded-full border border-neutral-800 p-1 cursor-pointer transition-transform duration-500"
           >
-            <div className="w-full h-full rounded-full overflow-hidden bg-red-[#C4161C] ">
+            <div className="w-full h-full rounded-full overflow-hidden bg-red-[#C4161C] flex items-center justify-center">
               <img
                 src={PROFILE_USER.avatar}
                 alt={`${PROFILE_USER.username} Logo`}
-                className="w-full h-full object-fit opacity-90 hover:opacity-100 transition-opacity"
+                className="w-full h-full object-cover opacity-90 hover:opacity-100 transition-opacity"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).style.display = "none";
+                }}
               />
             </div>
           </motion.div>
 
           <div className="flex flex-col items-center md:items-start w-full">
-            <h1 className="text-3xl md:text-4xl font-light text-white tracking-[0.2em] cursor-default">
+            <h1 className="text-3xl md:text-4xl font-light text-white tracking-[0.2em] cursor-default uppercase">
               {PROFILE_USER.username}
             </h1>
           </div>
         </motion.header>
 
-        {/* TABS */}
-        <div className="flex justify-center border-t border-neutral-900 gap-12 md:gap-32">
-          <button
-            onClick={() => setActiveTab("thumbnails")}
-            className={`flex items-center gap-3 py-6 border-t cursor-pointer focus:outline-none ${activeTab === "thumbnails" ? "border-white text-white" : "border-transparent text-neutral-600 hover:text-neutral-300"} text-[11px] md:text-[12px] font-medium tracking-[0.25em] -mt-[1px] transition-all duration-300`}
+        {/* CONDITIONAL RENDER: SKELETON VS ACTUAL CONTENT */}
+        {!isAuthenticated ? (
+          // --- SKELETON LAYOUT ---
+          <div className="w-full">
+            <div className="flex justify-center border-t border-neutral-900 gap-12 md:gap-32">
+              <div className="flex items-center gap-3 py-6 border-t border-transparent text-neutral-800 text-[11px] md:text-[12px] font-medium tracking-[0.25em] -mt-[1px]">
+                <div className="w-4 h-4 bg-neutral-900/50 rounded-sm animate-pulse"></div>
+                <div className="w-24 h-3 bg-neutral-900/50 rounded-sm animate-pulse"></div>
+              </div>
+              <div className="flex items-center gap-3 py-6 border-t border-transparent text-neutral-800 text-[11px] md:text-[12px] font-medium tracking-[0.25em] -mt-[1px]">
+                <div className="w-4 h-4 bg-neutral-900/50 rounded-sm animate-pulse"></div>
+                <div className="w-32 h-3 bg-neutral-900/50 rounded-sm animate-pulse"></div>
+              </div>
+            </div>
+
+            <div className="mt-4 md:mt-8 min-h-[400px]">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-4">
+                {[1, 2, 3, 4, 5, 6].map((i) => (
+                  <div
+                    key={i}
+                    className="aspect-[9/16] bg-neutral-900/30 animate-pulse rounded-xl"
+                  ></div>
+                ))}
+              </div>
+            </div>
+          </div>
+        ) : (
+          // --- MAIN PORTFOLIO CONTENT ---
+          <motion.div
+            key="portfolio-content"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6, ease: customEase }}
           >
-            <Grid
-              size={14}
-              strokeWidth={activeTab === "thumbnails" ? 2 : 1.5}
-            />{" "}
-            Thumbnails
-          </button>
-          <button
-            onClick={() => setActiveTab("motion")}
-            className={`flex items-center gap-3 py-6 border-t cursor-pointer focus:outline-none ${activeTab === "motion" ? "border-white text-white" : "border-transparent text-neutral-600 hover:text-neutral-300"} text-[11px] md:text-[12px] font-medium tracking-[0.25em] -mt-[1px] transition-all duration-300`}
-          >
-            <Film size={14} strokeWidth={activeTab === "motion" ? 2 : 1.5} />{" "}
-            Motions Ghraphic
-          </button>
-        </div>
-
-        {/* TAB CONTENT */}
-        <div className="mt-4 md:mt-8 min-h-[400px]">
-          <AnimatePresence mode="wait">
-            {/* THUMBNAILS (IMAGES) */}
-            {activeTab === "thumbnails" && (
-              <motion.div
-                key="images"
-                variants={tabContentVariants}
-                initial="initial"
-                animate="animate"
-                exit="exit"
+            {/* TABS */}
+            <div className="flex justify-center border-t border-neutral-900 gap-12 md:gap-32">
+              <button
+                onClick={() => setActiveTab("thumbnails")}
+                className={`flex items-center gap-3 py-6 border-t cursor-pointer focus:outline-none ${activeTab === "thumbnails" ? "border-white text-white" : "border-transparent text-neutral-600 hover:text-neutral-300"} text-[11px] md:text-[12px] font-medium tracking-[0.25em] -mt-[1px] transition-all duration-300`}
               >
-                <motion.div
-                  variants={staggerContainer}
-                  initial="hidden"
-                  animate="show"
-                  className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-4"
-                >
-                  {imagePosts.map((post) => (
-                    <motion.div
-                      key={post.id}
-                      variants={gridItem}
-                      // Enforce 1080x1920 ratio
-                      className="aspect-[9/16] bg-neutral-900 relative group cursor-pointer overflow-hidden rounded-xl"
-                      onClick={() => setSelectedPost(post)}
-                    >
-                      <motion.img
-                        whileHover={{ scale: 1.05 }}
-                        transition={{ duration: 0.7, ease: customEase }}
-                        src={post.src}
-                        className="w-full h-full object-cover"
-                      />
-                      {/* Hover Overlay */}
-                      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex justify-center items-center gap-6">
-                        <div className="flex items-center gap-2 text-white font-medium tracking-wide transform translate-y-4 group-hover:translate-y-0 transition-all duration-300">
-                          View Project
-                        </div>
-                      </div>
-                    </motion.div>
-                  ))}
-                </motion.div>
-              </motion.div>
-            )}
-
-            {/* MOTION (VIDEOS) */}
-            {activeTab === "motion" && (
-              <motion.div
-                key="videos"
-                variants={tabContentVariants}
-                initial="initial"
-                animate="animate"
-                exit="exit"
-                className="flex flex-col"
+                <Grid
+                  size={14}
+                  strokeWidth={activeTab === "thumbnails" ? 2 : 1.5}
+                />{" "}
+                Thumbnails
+              </button>
+              <button
+                onClick={() => setActiveTab("motion")}
+                className={`flex items-center gap-3 py-6 border-t cursor-pointer focus:outline-none ${activeTab === "motion" ? "border-white text-white" : "border-transparent text-neutral-600 hover:text-neutral-300"} text-[11px] md:text-[12px] font-medium tracking-[0.25em] -mt-[1px] transition-all duration-300`}
               >
-                {/* RESOLUTION SWITCH */}
-                <div className="flex justify-center gap-8 md:gap-16 mb-8 md:mb-12">
-                  <button
-                    onClick={() => setMotionResolution("1080x1920")}
-                    className={`text-[10px] md:text-[11px] tracking-[0.2em] transition-all duration-300 cursor-pointer focus:outline-none ${motionResolution === "1080x1920" ? "text-white font-medium border-b border-white pb-1" : "text-neutral-600 hover:text-neutral-300 border-b border-transparent pb-1"}`}
-                  >
-                    1080 × 1920
-                  </button>
-                  <button
-                    onClick={() => setMotionResolution("1920x1080")}
-                    className={`text-[10px] md:text-[11px] tracking-[0.2em] transition-all duration-300 cursor-pointer focus:outline-none ${motionResolution === "1920x1080" ? "text-white font-medium border-b border-white pb-1" : "text-neutral-600 hover:text-neutral-300 border-b border-transparent pb-1"}`}
-                  >
-                    1920 × 1080
-                  </button>
-                </div>
+                <Film
+                  size={14}
+                  strokeWidth={activeTab === "motion" ? 2 : 1.5}
+                />{" "}
+                Motions Ghraphic
+              </button>
+            </div>
 
-                <motion.div
-                  variants={staggerContainer}
-                  initial="hidden"
-                  animate="show"
-                  // Keep both vertical and horizontal videos vertically stacked and centered
-                  className="flex flex-col items-center gap-8 md:gap-12 w-full max-w-4xl mx-auto transition-all duration-500"
-                >
-                  {videoPosts.length === 0 && (
-                    <div className="w-full py-12 text-center text-neutral-600 tracking-widest text-sm uppercase">
-                      No projects found for this resolution.
-                    </div>
-                  )}
-                  {videoPosts.map((post) => (
+            {/* TAB CONTENT */}
+            <div className="mt-4 md:mt-8 min-h-[400px]">
+              <AnimatePresence mode="wait">
+                {/* THUMBNAILS (IMAGES) */}
+                {activeTab === "thumbnails" && (
+                  <motion.div
+                    key="images"
+                    variants={tabContentVariants}
+                    initial="initial"
+                    animate="animate"
+                    exit="exit"
+                  >
                     <motion.div
-                      key={post.id}
-                      variants={gridItem}
-                      className={`${
-                        motionResolution === "1080x1920"
-                          ? "aspect-[9/16] max-w-[280px] md:max-w-[340px]"
-                          : "aspect-video max-w-full"
-                      } w-full bg-neutral-900 relative group cursor-pointer overflow-hidden rounded-xl transition-all duration-500 shadow-2xl`}
-                      onClick={() => setSelectedPost(post)}
+                      variants={staggerContainer}
+                      initial="hidden"
+                      animate="show"
+                      className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-4"
                     >
-                      <motion.video
-                        whileHover={{ scale: 1.02 }}
-                        transition={{ duration: 0.7, ease: customEase }}
-                        src={post.src}
-                        muted
-                        loop
-                        playsInline
-                        autoPlay
-                        className="w-full h-full object-cover opacity-80 group-hover:opacity-100"
-                      />
-
-                      {/* Frosted Play Icon Overlay */}
-                      <div className="absolute inset-0 flex justify-center items-center pointer-events-none transition-transform duration-500 group-hover:scale-110">
-                        <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-black/40 backdrop-blur-md flex justify-center items-center border border-white/20 text-white shadow-xl">
-                          <Play
-                            className="ml-1 fill-white opacity-90"
-                            size={24}
+                      {imagePosts.map((post) => (
+                        <motion.div
+                          key={post.id}
+                          variants={gridItem}
+                          className="aspect-[9/16] bg-neutral-900 relative group cursor-pointer overflow-hidden rounded-xl"
+                          onClick={() => setSelectedPost(post)}
+                        >
+                          <motion.img
+                            whileHover={{ scale: 1.05 }}
+                            transition={{ duration: 0.7, ease: customEase }}
+                            src={post.src}
+                            className="w-full h-full object-cover"
                           />
-                        </div>
-                      </div>
+                          {/* Hover Overlay */}
+                          <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex justify-center items-center gap-6">
+                            <div className="flex items-center gap-2 text-white font-medium tracking-wide transform translate-y-4 group-hover:translate-y-0 transition-all duration-300">
+                              View Project
+                            </div>
+                          </div>
+                        </motion.div>
+                      ))}
                     </motion.div>
-                  ))}
-                </motion.div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
+                  </motion.div>
+                )}
+
+                {/* MOTION (VIDEOS) */}
+                {activeTab === "motion" && (
+                  <motion.div
+                    key="videos"
+                    variants={tabContentVariants}
+                    initial="initial"
+                    animate="animate"
+                    exit="exit"
+                    className="flex flex-col"
+                  >
+                    {/* RESOLUTION SWITCH */}
+                    <div className="flex justify-center gap-8 md:gap-16 mb-8 md:mb-12">
+                      <button
+                        onClick={() => setMotionResolution("1080x1920")}
+                        className={`text-[10px] md:text-[11px] tracking-[0.2em] transition-all duration-300 cursor-pointer focus:outline-none ${motionResolution === "1080x1920" ? "text-white font-medium border-b border-white pb-1" : "text-neutral-600 hover:text-neutral-300 border-b border-transparent pb-1"}`}
+                      >
+                        1080 × 1920
+                      </button>
+                      <button
+                        onClick={() => setMotionResolution("1920x1080")}
+                        className={`text-[10px] md:text-[11px] tracking-[0.2em] transition-all duration-300 cursor-pointer focus:outline-none ${motionResolution === "1920x1080" ? "text-white font-medium border-b border-white pb-1" : "text-neutral-600 hover:text-neutral-300 border-b border-transparent pb-1"}`}
+                      >
+                        1920 × 1080
+                      </button>
+                    </div>
+
+                    <motion.div
+                      variants={staggerContainer}
+                      initial="hidden"
+                      animate="show"
+                      className="flex flex-col items-center gap-8 md:gap-12 w-full max-w-4xl mx-auto transition-all duration-500"
+                    >
+                      {videoPosts.length === 0 && (
+                        <div className="w-full py-12 text-center text-neutral-600 tracking-widest text-sm uppercase">
+                          No projects found for this resolution.
+                        </div>
+                      )}
+                      {videoPosts.map((post) => (
+                        <motion.div
+                          key={post.id}
+                          variants={gridItem}
+                          className={`${
+                            motionResolution === "1080x1920"
+                              ? "aspect-[9/16] max-w-[280px] md:max-w-[340px]"
+                              : "aspect-video max-w-full"
+                          } w-full bg-neutral-900 relative group cursor-pointer overflow-hidden rounded-xl transition-all duration-500 shadow-2xl`}
+                          onClick={() => setSelectedPost(post)}
+                        >
+                          <motion.video
+                            whileHover={{ scale: 1.02 }}
+                            transition={{ duration: 0.7, ease: customEase }}
+                            src={post.src}
+                            muted
+                            loop
+                            playsInline
+                            autoPlay
+                            className="w-full h-full object-cover opacity-80 group-hover:opacity-100"
+                          />
+
+                          {/* Frosted Play Icon Overlay */}
+                          <div className="absolute inset-0 flex justify-center items-center pointer-events-none transition-transform duration-500 group-hover:scale-110">
+                            <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-black/40 backdrop-blur-md flex justify-center items-center border border-white/20 text-white shadow-xl">
+                              <Play
+                                className="ml-1 fill-white opacity-90"
+                                size={24}
+                              />
+                            </div>
+                          </div>
+                        </motion.div>
+                      ))}
+                    </motion.div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </motion.div>
+        )}
       </main>
 
-      {/* MODAL */}
+      {/* POST PREVIEW MODAL */}
       <AnimatePresence>
         {selectedPost && (
           <motion.div
@@ -341,7 +481,7 @@ export default function ProfilePage() {
               <X size={36} strokeWidth={1} />
             </button>
 
-            {/* Modal Content - Captions Removed, Size Reduced */}
+            {/* Modal Content */}
             <motion.div
               initial={{ scale: 0.95, opacity: 0, y: 15 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
