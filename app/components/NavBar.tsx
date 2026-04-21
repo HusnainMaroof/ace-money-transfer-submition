@@ -85,7 +85,7 @@ export default function Navigation() {
             >
               <NavLink href="#work">WORK</NavLink>
               <NavLink href="#about">ABOUT</NavLink>
-              <NavLink href="/project/Acemoneytransfer"> SUBMISSION</NavLink>
+              <NavLink href="/project"> SUBMISSION</NavLink>
             </motion.div>
 
             {/* Desktop CTA */}

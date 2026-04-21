@@ -1,10 +1,10 @@
-import ProfilePage from "@/app/components/MainSection";
+import AceMoneyTab from "@/app/components/Acemoney";
 import React from "react";
 
 const page = () => {
   return (
     <div>
-      <ProfilePage />
+      <AceMoneyTab/>
     </div>
   );
 };
