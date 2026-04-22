@@ -16,14 +16,7 @@ export type PostGroup = {
   posts: Post[];
 };
 
-export type Terminal = {
-  id: number;
-  name: string;
-  code: string;
-  password: string;
-  route: string;
-  projectId: number;
-};
+
 
 export const POST_GROUPS: PostGroup[] = [
   {
@@ -204,4 +197,43 @@ export const POST_GROUPS: PostGroup[] = [
       },
     ],
   },
+];
+
+
+
+
+export type Terminal = {
+  id: number;
+  name: string;
+  code: string;
+  password: string;
+  logoImg: string;
+  route: string;
+  projectId: number;
+};
+
+
+// --- Mock Data ---
+
+export const VAULT_TERMINALS: Terminal[] = [
+  {
+    id: 1,
+    name: "Ace Money transfer",
+    code: "TRX-01",
+    password: "ace1",
+    route: "/project/Acemoneytransfer",
+    logoImg:
+    "https://res.cloudinary.com/dwtskde96/image/upload/v1776787100/logo_y2klhn.svg",
+    projectId: 1,
+  },
+  {
+    id: 2,
+    name: "Crispies uk",
+    code: "GLN-02",
+    password: "crispiesuk1",
+    logoImg: "https://irp.cdn-website.com/f3edc476/dms3rep/multi/Asset+11+new-cbf9cc0a.svg",
+    route: "/project/Crispiesuk",
+    projectId: 2,
+  },
+  
 ];

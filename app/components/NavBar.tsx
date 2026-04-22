@@ -141,7 +141,7 @@ export default function Navigation() {
                 ABOUT
               </NavLink>
               <NavLink
-                href="/project/Acemoneytransfer"
+                href="/project"
                 mobile
                 onClick={() => setIsMenuOpen(false)}
               >

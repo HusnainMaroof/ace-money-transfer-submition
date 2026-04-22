@@ -12,51 +12,17 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAppContext } from "@/context/AppContext";
-import { POST_GROUPS } from "../StaticData/data";
+import { POST_GROUPS, Terminal, VAULT_TERMINALS } from "../StaticData/data";
 import { useRouter } from "next/navigation"; // ✅ CORRECT
 
 // --- Interfaces ---
 
-export type Terminal = {
-  id: number;
-  name: string;
-  code: string;
-  password: string;
-  logoImg: string;
-  route: string;
-  projectId: number;
-};
 
 interface VaultCardProps {
   terminal: Terminal;
   index: number;
   onVerified: (terminal: Terminal) => void;
 }
-
-// --- Mock Data ---
-
-export const VAULT_TERMINALS: Terminal[] = [
-  {
-    id: 1,
-    name: "Ace Money transfer",
-    code: "TRX-01",
-    password: "ace1",
-    route: "/project/Acemoneytransfer",
-    logoImg:
-      "https://res.cloudinary.com/dwtskde96/image/upload/v1776787100/logo_y2klhn.svg",
-    projectId: 1,
-  },
-  {
-    id: 2,
-    name: "Crispies uk",
-    code: "GLN-02",
-    password: "crispiesuk1",
-    logoImg: "https://irp.cdn-website.com/f3edc476/dms3rep/multi/Asset+11+new-cbf9cc0a.svg",
-    route: "/project/Crispiesuk",
-    projectId: 2,
-  },
-
-];
 // --- Components ---
 
 const VaultCard: React.FC<VaultCardProps> = ({
@@ -71,7 +37,7 @@ const VaultCard: React.FC<VaultCardProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setError(false);
-
+    
     if (password === terminal.password) {
       setIsVerifying(true);
       setTimeout(() => {

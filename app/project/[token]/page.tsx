@@ -1,10 +1,11 @@
-import AceMoneyTab from "@/app/components/Acemoney";
+import Projects from "@/app/components/Project";
+
 import React from "react";
 
 const page = () => {
   return (
     <div>
-      <AceMoneyTab/>
+      <Projects/>
     </div>
   );
 };
