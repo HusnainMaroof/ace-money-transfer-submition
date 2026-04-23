@@ -7,7 +7,7 @@ export type Post = {
   likes: string;
   caption: string;
   category: PostCategory;
-  res?: "1080x1920" | "1920x1080";
+  res?: "1080x1920" | "1920x1080" | "1080x1440";
 };
 
 export type PostGroup = {
@@ -15,8 +15,6 @@ export type PostGroup = {
   projectName: string;
   posts: Post[];
 };
-
-
 
 export const POST_GROUPS: PostGroup[] = [
   {
@@ -121,6 +119,7 @@ export const POST_GROUPS: PostGroup[] = [
         src: "https://res.cloudinary.com/dwtskde96/image/upload/v1776779688/Artboard_3_vazv6f.jpg",
         likes: "4.2k",
         caption: "Clean lines and natural light. 🏛️✨ #architecture",
+        res: "1080x1440",
       },
       {
         id: 2,
@@ -128,6 +127,7 @@ export const POST_GROUPS: PostGroup[] = [
         category: "thumbnail",
         src: "https://res.cloudinary.com/dwtskde96/image/upload/v1776779688/1_copy_3_fj7jqs.jpg",
         likes: "5.1k",
+        res: "1080x1440",
         caption: "Concrete and wood textures blending seamlessly.",
       },
       {
@@ -136,6 +136,7 @@ export const POST_GROUPS: PostGroup[] = [
         category: "thumbnail",
         src: "https://res.cloudinary.com/dwtskde96/image/upload/v1776779688/Artboard_2_mbuz7f.jpg",
         likes: "3.8k",
+        res: "1080x1440",
         caption: "Interior details that matter. 🛋️",
       },
       {
@@ -144,6 +145,7 @@ export const POST_GROUPS: PostGroup[] = [
         category: "thumbnail",
         src: "https://res.cloudinary.com/dwtskde96/image/upload/v1776779688/1_copy_y6pfol.jpg",
         likes: "5.1k",
+        res: "1080x1440",
         caption: "Concrete and wood textures blending seamlessly.",
       },
       {
@@ -152,6 +154,7 @@ export const POST_GROUPS: PostGroup[] = [
         category: "thumbnail",
         src: "https://res.cloudinary.com/dwtskde96/image/upload/v1776779688/1_copy_2_hwi1at.jpg",
         likes: "5.1k",
+        res: "1080x1440",
         caption: "Concrete and wood textures blending seamlessly.",
       },
       {
@@ -160,6 +163,7 @@ export const POST_GROUPS: PostGroup[] = [
         category: "thumbnail",
         src: "https://res.cloudinary.com/dwtskde96/image/upload/v1776779689/1_f7jevx.jpg",
         likes: "5.1k",
+        res: "1080x1440",
         caption: "Concrete and wood textures blending seamlessly.",
       },
 
@@ -169,6 +173,7 @@ export const POST_GROUPS: PostGroup[] = [
         category: "thumbnail",
         src: "https://res.cloudinary.com/dwtskde96/image/upload/v1776779689/Artboard_12_ofwebt.jpg",
         likes: "5.1k",
+        res: "1080x1440",
         caption: "Vertical motion study - Abstract flows.",
       },
       {
@@ -177,6 +182,7 @@ export const POST_GROUPS: PostGroup[] = [
         category: "thumbnail",
         src: "https://res.cloudinary.com/dwtskde96/image/upload/v1776779689/Artboard_1_tpleey.jpg",
         likes: "5.1k",
+        res: "1080x1440",
         caption: "Horizontal motion study - Abstract flows.",
       },
       {
@@ -185,6 +191,7 @@ export const POST_GROUPS: PostGroup[] = [
         category: "thumbnail",
         src: "https://res.cloudinary.com/dwtskde96/image/upload/v1776779689/Artboard_4_nnx2p8.jpg",
         likes: "5.1k",
+        res: "1080x1440",
         caption: "Horizontal motion study - Abstract flows.",
       },
       {
@@ -193,14 +200,12 @@ export const POST_GROUPS: PostGroup[] = [
         category: "thumbnail",
         src: "https://res.cloudinary.com/dwtskde96/image/upload/v1776779689/Artboard_13_purbr0.jpg",
         likes: "5.1k",
+        res: "1080x1440",
         caption: "Horizontal motion study - Abstract flows.",
       },
     ],
   },
 ];
-
-
-
 
 export type Terminal = {
   id: number;
@@ -212,7 +217,6 @@ export type Terminal = {
   projectId: number;
 };
 
-
 // --- Mock Data ---
 
 export const VAULT_TERMINALS: Terminal[] = [
@@ -223,7 +227,7 @@ export const VAULT_TERMINALS: Terminal[] = [
     password: "ace1",
     route: "/project/Acemoneytransfer",
     logoImg:
-    "https://res.cloudinary.com/dwtskde96/image/upload/v1776787100/logo_y2klhn.svg",
+      "https://res.cloudinary.com/dwtskde96/image/upload/v1776787100/logo_y2klhn.svg",
     projectId: 1,
   },
   {
@@ -231,9 +235,9 @@ export const VAULT_TERMINALS: Terminal[] = [
     name: "Crispies uk",
     code: "GLN-02",
     password: "crispiesuk1",
-    logoImg: "https://irp.cdn-website.com/f3edc476/dms3rep/multi/Asset+11+new-cbf9cc0a.svg",
+    logoImg:
+      "https://irp.cdn-website.com/f3edc476/dms3rep/multi/Asset+11+new-cbf9cc0a.svg",
     route: "/project/Crispiesuk",
     projectId: 2,
   },
-  
 ];

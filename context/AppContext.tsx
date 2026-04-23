@@ -3,92 +3,59 @@
 import { PostGroup } from "@/app/StaticData/data";
 import React, { createContext, useContext, useEffect, useState } from "react";
 
-
 type AppContextType = {
   activeProject: PostGroup | null;
+  loading: boolean;
   setActiveProject: (data: PostGroup) => void;
   clearProject: () => void;
 };
 
 const AppContext = createContext<AppContextType | null>(null);
 
-// ---------- TTL HELPERS ----------
-const setWithExpiry = (key: string, value: any, ttl: number) => {
-  const now = Date.now();
-
-  const item = {
-    value,
-    expiry: now + ttl,
-  };
-
-  localStorage.setItem(key, JSON.stringify(item));
-};
-
-const getWithExpiry = (key: string) => {
-  const itemStr = localStorage.getItem(key);
-  if (!itemStr) return null;
-
-  try {
-    const item = JSON.parse(itemStr);
-    const now = Date.now();
-
-    if (now > item.expiry) {
-      localStorage.removeItem(key);
-      return null;
-    }
-
-    return item.value;
-  } catch {
-    localStorage.removeItem(key);
-    return null;
-  }
-};
-
-// ---------- PROVIDER ----------
 export const AppContextProvider = ({
   children,
 }: {
   children: React.ReactNode;
 }) => {
-  const [activeProject, setActiveProjectState] =
-    useState<PostGroup | null>(null);
+  const [activeProject, setActiveProjectState] = useState<PostGroup | null>(
+    null,
+  );
+  const [loading, setLoading] = useState(true);
+  const [isClient, setIsClient] = useState(false);
 
-  const [mounted, setMounted] = useState(false);
-
-  // prevent hydration issues
   useEffect(() => {
-    setMounted(true);
+    setIsClient(true);
+
+    const itemStr = localStorage.getItem("activeProject");
+
+    if (itemStr) {
+      try {
+        const parsed = JSON.parse(itemStr);
+        setActiveProjectState(parsed);
+      } catch {
+        localStorage.removeItem("activeProject");
+      }
+    }
+
+    setLoading(false);
   }, []);
 
-  // ---------- LOAD FROM STORAGE ----------
-  useEffect(() => {
-    if (!mounted) return;
-
-    const saved = getWithExpiry("activeProject");
-    if (saved) {
-      setActiveProjectState(saved);
-    }
-  }, [mounted]);
-
-  // ---------- SET + SAVE ----------
   const setActiveProject = (data: PostGroup) => {
     setActiveProjectState(data);
-
-    // 5 min TTL (adjust as needed)
-    setWithExpiry("activeProject", data, 5 * 60 * 1000);
+    localStorage.setItem("activeProject", JSON.stringify(data));
   };
 
-  // ---------- CLEAR ----------
   const clearProject = () => {
     localStorage.removeItem("activeProject");
     setActiveProjectState(null);
   };
 
-  if (!mounted) return null;
+  // 🔥 prevents hydration mismatch
+  if (!isClient) return null;
 
   return (
     <AppContext.Provider
-      value={{ activeProject, setActiveProject, clearProject }}
+      value={{ activeProject, setActiveProject, clearProject, loading }}
     >
       {children}
     </AppContext.Provider>

@@ -17,7 +17,6 @@ import { useRouter } from "next/navigation"; // ✅ CORRECT
 
 // --- Interfaces ---
 
-
 interface VaultCardProps {
   terminal: Terminal;
   index: number;
@@ -37,7 +36,7 @@ const VaultCard: React.FC<VaultCardProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setError(false);
-    
+
     if (password === terminal.password) {
       setIsVerifying(true);
       setTimeout(() => {
@@ -73,7 +72,6 @@ const VaultCard: React.FC<VaultCardProps> = ({
                 <div className="w-full h-full rounded-full overflow-hidden flex items-center justify-center ">
                   <img
                     src={terminal.logoImg}
-                    
                     className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity  duration-700"
                   />
                 </div>
@@ -163,17 +161,19 @@ const VaultCard: React.FC<VaultCardProps> = ({
 
 export default function Vault() {
   const [redirecting, setRedirecting] = useState<Terminal | null>(null);
-  const {   setActiveProject } = useAppContext();
+  const { setActiveProject } = useAppContext();
   const router = useRouter();
   const handleVerified = (terminal: Terminal) => {
     setRedirecting(terminal);
 
-    // console.log(terminal);
     const group = POST_GROUPS.find((g) => g.projectId === terminal.projectId);
 
-   setActiveProject(group!);
+    if (!group) {
+      console.error("Project not found");
+      return;
+    }
 
-    // console.log(group);
+    setActiveProject(group);
 
     setTimeout(() => {
       router.push(terminal.route);
