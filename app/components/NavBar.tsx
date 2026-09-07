@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Sun, Moon } from "lucide-react";
+import { useTheme } from "@/context/ThemeContext";
 
 interface NavLinkProps {
   href: string;
@@ -22,13 +23,30 @@ const NavLink: React.FC<NavLinkProps> = ({
     onClick={onClick}
     className={
       mobile
-        ? "text-3xl tracking-[-0.02em] text-white font-bold hover:text-blue-500 transition-colors py-2"
-        : "text-xs tracking-wider text-gray-500 hover:text-white transition-colors"
+        ? "text-3xl tracking-[-0.02em] text-fg font-bold hover:text-accent transition-colors py-2"
+        : "text-xs tracking-wider text-fg-muted hover:text-fg transition-colors"
     }
   >
     {children}
   </a>
 );
+
+const ThemeToggle: React.FC<{ mobile?: boolean }> = ({ mobile }) => {
+  const { theme, toggleTheme } = useTheme();
+  return (
+    <button
+      onClick={toggleTheme}
+      aria-label="Toggle theme"
+      className={
+        mobile
+          ? "flex items-center gap-2 text-fg-muted hover:text-fg transition-colors py-2"
+          : "p-2 text-fg-muted hover:text-fg transition-colors cursor-pointer"
+      }
+    >
+      {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+    </button>
+  );
+};
 
 export default function Navigation() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -59,24 +77,22 @@ export default function Navigation() {
         transition={{ duration: 1, ease: [0.76, 0, 0.24, 1] }}
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
           isScrolled
-            ? "bg-black/80 backdrop-blur-xl py-4"
+            ? "bg-canvas/80 backdrop-blur-xl py-4 border-b border-line"
             : "bg-transparent py-6 lg:py-8"
         }`}
       >
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
           <div className="flex justify-between items-center">
-            {/* Logo */}
             <motion.a
               href="#"
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.5, duration: 1 }}
-              className="text-xs tracking-[0.4em] text-white font-semibold"
+              className="text-xs tracking-[0.4em] text-fg font-semibold"
             >
               AM
             </motion.a>
 
-            {/* Desktop menu */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -85,28 +101,27 @@ export default function Navigation() {
             >
               <NavLink href="#work">WORK</NavLink>
               <NavLink href="#about">ABOUT</NavLink>
-              <NavLink href="/project"> SUBMISSION</NavLink>
+              <NavLink href="/project">SUBMISSION</NavLink>
+              <ThemeToggle />
             </motion.div>
 
-            {/* Desktop CTA */}
             <motion.a
               href="#contact"
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.7, duration: 1 }}
               whileHover={{ scale: 1.02 }}
-              className="hidden md:block px-6 py-2.5 border border-white/10 hover:border-white/30 text-xs tracking-wider transition-colors text-white"
+              className="hidden md:block px-6 py-2.5 border border-line hover:border-fg/30 text-xs tracking-wider transition-colors text-fg"
             >
-              LET'S TALK
+              LET&apos;S TALK
             </motion.a>
 
-            {/* Mobile menu button */}
             <motion.button
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.6, duration: 1 }}
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="md:hidden p-2 text-white z-50 relative"
+              className="md:hidden p-2 text-fg z-50 relative"
               aria-label="Toggle Menu"
             >
               {isMenuOpen ? (
@@ -119,7 +134,6 @@ export default function Navigation() {
         </div>
       </motion.nav>
 
-      {/* Mobile menu overlay */}
       <AnimatePresence>
         {isMenuOpen && (
           <motion.div
@@ -127,7 +141,7 @@ export default function Navigation() {
             animate={{ opacity: 1, clipPath: "circle(150% at 90% 5%)" }}
             exit={{ opacity: 0, clipPath: "circle(0% at 90% 5%)" }}
             transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1] }}
-            className="fixed inset-0 z-40 bg-neutral-950 md:hidden"
+            className="fixed inset-0 z-40 bg-canvas md:hidden"
           >
             <div className="flex flex-col items-center justify-center h-full space-y-6 px-6">
               <NavLink href="#work" mobile onClick={() => setIsMenuOpen(false)}>
@@ -147,6 +161,7 @@ export default function Navigation() {
               >
                 SUBMISSION
               </NavLink>
+              <ThemeToggle mobile />
 
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -154,10 +169,10 @@ export default function Navigation() {
                 transition={{ delay: 0.4 }}
                 className="pt-12 text-center"
               >
-                <p className="text-neutral-500 text-[10px] tracking-[0.3em] uppercase mb-2">
+                <p className="text-fg-muted text-[10px] tracking-[0.3em] uppercase mb-2">
                   Get in touch
                 </p>
-                <p className="text-white font-mono text-sm">
+                <p className="text-fg font-mono text-sm">
                   hello@aamirmaroof.com
                 </p>
               </motion.div>

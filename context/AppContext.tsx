@@ -1,7 +1,12 @@
 "use client";
 
-import { PostGroup } from "@/app/StaticData/data";
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, {
+  createContext,
+  useContext,
+  useMemo,
+  useSyncExternalStore,
+} from "react";
+import type { PostGroup } from "@/app/StaticData/types";
 
 type AppContextType = {
   activeProject: PostGroup | null;
@@ -10,6 +15,72 @@ type AppContextType = {
   clearProject: () => void;
 };
 
+const STORAGE_KEY = "activeProject";
+
+let currentProject: PostGroup | null = null;
+let hydrated = false;
+const listeners = new Set<() => void>();
+
+let clientSnapshot: { activeProject: PostGroup | null; loading: boolean } = {
+  activeProject: null,
+  loading: true,
+};
+
+const serverSnapshot = { activeProject: null, loading: true };
+
+function rebuild() {
+  clientSnapshot = { activeProject: currentProject, loading: !hydrated };
+  listeners.forEach((l) => l());
+}
+
+function hydrate() {
+  if (hydrated) return;
+  hydrated = true;
+  if (typeof window !== "undefined") {
+    const itemStr = localStorage.getItem(STORAGE_KEY);
+    if (itemStr) {
+      try {
+        currentProject = JSON.parse(itemStr) as PostGroup;
+      } catch {
+        localStorage.removeItem(STORAGE_KEY);
+      }
+    }
+  }
+  rebuild();
+}
+
+export function setActiveProject(data: PostGroup) {
+  currentProject = data;
+  if (typeof window !== "undefined") {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  }
+  rebuild();
+}
+
+export function clearProject() {
+  currentProject = null;
+  if (typeof window !== "undefined") {
+    localStorage.removeItem(STORAGE_KEY);
+  }
+  rebuild();
+}
+
+function subscribe(callback: () => void) {
+  if (!hydrated) hydrate();
+  listeners.add(callback);
+  return () => {
+    listeners.delete(callback);
+  };
+}
+
+function getSnapshot() {
+  return clientSnapshot;
+}
+
+function getServerSnapshot() {
+  return serverSnapshot;
+}
+
 const AppContext = createContext<AppContextType | null>(null);
 
 export const AppContextProvider = ({
@@ -17,52 +88,21 @@ export const AppContextProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const [activeProject, setActiveProjectState] = useState<PostGroup | null>(
-    null,
+  const data = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+
+  const value = useMemo<AppContextType>(
+    () => ({
+      activeProject: data.activeProject,
+      loading: data.loading,
+      setActiveProject,
+      clearProject,
+    }),
+    [data],
   );
-  const [loading, setLoading] = useState(true);
-  const [isClient, setIsClient] = useState(false);
 
-  useEffect(() => {
-    setIsClient(true);
-
-    const itemStr = localStorage.getItem("activeProject");
-
-    if (itemStr) {
-      try {
-        const parsed = JSON.parse(itemStr);
-        setActiveProjectState(parsed);
-      } catch {
-        localStorage.removeItem("activeProject");
-      }
-    }
-
-    setLoading(false);
-  }, []);
-
-  const setActiveProject = (data: PostGroup) => {
-    setActiveProjectState(data);
-    localStorage.setItem("activeProject", JSON.stringify(data));
-  };
-
-  const clearProject = () => {
-    localStorage.removeItem("activeProject");
-    setActiveProjectState(null);
-  };
-
-  // 🔥 prevents hydration mismatch
-  if (!isClient) return null;
-
-  return (
-    <AppContext.Provider
-      value={{ activeProject, setActiveProject, clearProject, loading }}
-    >
-      {children}
-    </AppContext.Provider>
-  );
+  return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 };
 
-// ---------- HOOK ----------
 export const useAppContext = () => {
   const ctx = useContext(AppContext);
   if (!ctx) throw new Error("AppContext not found");

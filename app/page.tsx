@@ -1,10 +1,10 @@
-import HeroSection from "./components/HeroScetion";
+import HeroSection from "./components/HeroSection";
 import Navigation from "./components/NavBar";
 import Scroll from "./components/Scroll";
 
 const page = () => {
   return (
-    <div className="w-full bg-neutral-950">
+    <div className="w-full bg-canvas">
       <Navigation />
       <HeroSection />
       <Scroll />

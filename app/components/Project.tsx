@@ -5,13 +5,8 @@ import { Grid, X, Film, Play } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAppContext } from "@/context/AppContext";
 import Link from "next/link";
-
-import toast from "react-hot-toast";
 import Unauthorized from "./Unauthorized";
-import { redirect } from "next/navigation";
-import { Post } from "../StaticData/data";
-
-// --- TYPES ---
+import type { Post } from "../StaticData/types";
 
 const customEase: [number, number, number, number] = [0.16, 1, 0.3, 1];
 const RESOLUTIONS = ["1080x1920", "1920x1080"] as const;
@@ -21,7 +16,7 @@ const getAspectRatioClass = (res?: string) => {
   if (res === "1080x1920") return "aspect-[9/16]";
   if (res === "1920x1080") return "aspect-video";
   if (res === "1080x1440") return "aspect-[3/4]";
-  return "aspect-[9/16]"; // Default fallback
+  return "aspect-[9/16]";
 };
 
 const Projects = () => {
@@ -80,12 +75,10 @@ const Projects = () => {
   }
 
   return (
-    <div className="bg-[#050505] min-h-screen text-neutral-200 font-sans antialiased selection:bg-red-500/30">
+    <div className="bg-canvas min-h-screen text-fg font-sans antialiased selection:bg-accent/30">
       <main className="w-full max-w-[935px] mx-auto pt-10 md:pt-16 pb-20 px-4 md:px-0">
-        {/* HEADER */}
         <Link href={"/project"}>
-          {" "}
-          <span className="text-white text-xl underline cursor-pointer mb-8 inline-block">
+          <span className="text-fg text-xl underline cursor-pointer mb-8 inline-block">
             Back
           </span>
         </Link>
@@ -98,9 +91,9 @@ const Projects = () => {
         >
           <motion.div
             whileHover={{ scale: 1.05 }}
-            className="w-[110px] h-[110px] md:w-[150px] md:h-[150px] shrink-0 rounded-full border border-neutral-800 p-1 cursor-pointer bg-black shadow-2xl relative "
+            className="w-[110px] h-[110px] md:w-[150px] md:h-[150px] shrink-0 rounded-full border border-line p-1 cursor-pointer bg-surface shadow-2xl relative"
           >
-            <div className="w-full h-full rounded-full overflow-hidden flex items-center justify-center ">
+            <div className="w-full h-full rounded-full overflow-hidden flex items-center justify-center">
               <img
                 src={logo?.src || "https://via.placeholder.com/150"}
                 className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity duration-700"
@@ -110,26 +103,24 @@ const Projects = () => {
           </motion.div>
 
           <div className="flex flex-col items-center md:items-start">
-            <h1 className="text-3xl md:text-4xl font-black text-white tracking-[0.25em] cursor-default uppercase text-balance">
+            <h1 className="text-3xl md:text-4xl font-black text-fg tracking-[0.25em] cursor-default uppercase text-balance">
               {projectName}
             </h1>
           </div>
         </motion.header>
 
-        {/* CONTENT */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.6, ease: customEase }}
         >
-          {/* TABS */}
-          <div className="flex justify-center border-t border-white/5 gap-12 md:gap-32">
+          <div className="flex justify-center border-t border-line gap-12 md:gap-32">
             <button
               onClick={() => setActiveTab("thumbnails")}
               className={`flex items-center gap-3 py-6 border-t cursor-pointer focus:outline-none -mt-[1px] text-[10px] md:text-[11px] font-black uppercase tracking-[0.3em] transition-all duration-500 ${
                 activeTab === "thumbnails"
-                  ? "border-white text-white"
-                  : "border-transparent text-neutral-600 hover:text-neutral-300"
+                  ? "border-fg text-fg"
+                  : "border-transparent text-fg-muted hover:text-fg"
               }`}
             >
               <Grid size={14} /> Thumbnails
@@ -138,18 +129,16 @@ const Projects = () => {
               onClick={() => setActiveTab("motion")}
               className={`flex items-center gap-3 py-6 border-t cursor-pointer focus:outline-none -mt-[1px] text-[10px] md:text-[11px] font-black uppercase tracking-[0.3em] transition-all duration-500 ${
                 activeTab === "motion"
-                  ? "border-white text-white"
-                  : "border-transparent text-neutral-600 hover:text-neutral-300"
+                  ? "border-fg text-fg"
+                  : "border-transparent text-fg-muted hover:text-fg"
               }`}
             >
               <Film size={14} /> Motion Graphics
             </button>
           </div>
 
-          {/* TAB CONTENT */}
           <div className="mt-8 md:mt-12 min-h-[500px]">
             <AnimatePresence mode="wait">
-              {/* THUMBNAILS - Using Columns for Masonry to respect exact resolutions */}
               {activeTab === "thumbnails" && (
                 <motion.div
                   key="images"
@@ -160,7 +149,7 @@ const Projects = () => {
                   className="columns-2 md:columns-3 gap-3 md:gap-6 space-y-3 md:space-y-6"
                 >
                   {imagePosts.length === 0 ? (
-                    <div className="col-span-full py-24 text-center text-neutral-600 tracking-widest text-sm uppercase font-black">
+                    <div className="col-span-full py-24 text-center text-fg-muted tracking-widest text-sm uppercase font-black">
                       No thumbnails yet.
                     </div>
                   ) : (
@@ -168,7 +157,7 @@ const Projects = () => {
                       <motion.div
                         key={post.id}
                         whileHover={{ y: -5 }}
-                        className={`break-inside-avoid w-full ${getAspectRatioClass(post.res)} bg-[#111] relative group cursor-pointer overflow-hidden rounded-[24px] border border-white/5`}
+                        className={`break-inside-avoid w-full ${getAspectRatioClass(post.res)} bg-surface-2 relative group cursor-pointer overflow-hidden rounded-[24px] border border-line`}
                         onClick={() => setSelectedPost(post)}
                       >
                         <img
@@ -176,8 +165,8 @@ const Projects = () => {
                           alt={post.caption}
                           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-6">
-                          <span className="text-[9px] font-black uppercase tracking-widest text-red-500 mb-1">
+                        <div className="absolute inset-0 bg-gradient-to-t from-canvas/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-6">
+                          <span className="text-[9px] font-black uppercase tracking-widest text-accent mb-1">
                             {post.res?.replace("x", " × ") || "VIEW"}
                           </span>
                         </div>
@@ -187,7 +176,6 @@ const Projects = () => {
                 </motion.div>
               )}
 
-              {/* MOTION GRAPHICS */}
               {activeTab === "motion" && (
                 <motion.div
                   key="videos"
@@ -196,7 +184,6 @@ const Projects = () => {
                   animate="animate"
                   exit="exit"
                 >
-                  {/* Resolution Switch */}
                   <div className="flex justify-center gap-10 mb-12">
                     {RESOLUTIONS.map((res) => (
                       <button
@@ -204,8 +191,8 @@ const Projects = () => {
                         onClick={() => setMotionResolution(res)}
                         className={`text-[9px] font-black tracking-[0.3em] uppercase transition-all duration-500 cursor-pointer pb-1 ${
                           motionResolution === res
-                            ? "text-white border-b-2 border-red-600"
-                            : "text-neutral-600 hover:text-neutral-300"
+                            ? "text-fg border-b-2 border-accent"
+                            : "text-fg-muted hover:text-fg"
                         }`}
                       >
                         {res.replace("x", " × ")}
@@ -215,7 +202,7 @@ const Projects = () => {
 
                   <div className="flex flex-col items-center gap-12 w-full max-w-4xl mx-auto">
                     {videoPosts.length === 0 ? (
-                      <div className="py-20 text-center text-neutral-600 tracking-widest uppercase text-sm font-black">
+                      <div className="py-20 text-center text-fg-muted tracking-widest uppercase text-sm font-black">
                         No projects for this resolution.
                       </div>
                     ) : (
@@ -224,7 +211,7 @@ const Projects = () => {
                           key={`${activeProject?.projectId}-${post.id}`}
                           whileHover={{ scale: 1.01 }}
                           transition={{ duration: 0.4 }}
-                          className={`w-full bg-[#111] relative group cursor-pointer overflow-hidden rounded-[32px] border border-white/5 shadow-2xl ${
+                          className={`w-full bg-surface-2 relative group cursor-pointer overflow-hidden rounded-[32px] border border-line shadow-2xl ${
                             motionResolution === "1080x1920"
                               ? "aspect-[9/16] max-w-[340px]"
                               : "aspect-video max-w-full"
@@ -240,8 +227,8 @@ const Projects = () => {
                             className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity duration-700"
                           />
                           <div className="absolute inset-0 flex justify-center items-center pointer-events-none">
-                            <div className="w-16 h-16 rounded-full bg-black/50 backdrop-blur-md flex justify-center items-center border border-white/10 text-white shadow-2xl group-hover:bg-red-600/20 group-hover:border-red-500/40 transition-all duration-500">
-                              <Play className="ml-1 fill-white" size={24} />
+                            <div className="w-16 h-16 rounded-full bg-canvas/50 backdrop-blur-md flex justify-center items-center border border-line text-fg shadow-2xl group-hover:bg-accent/20 group-hover:border-accent/40 transition-all duration-500">
+                              <Play className="ml-1 fill-current" size={24} />
                             </div>
                           </div>
                         </motion.div>
@@ -255,18 +242,17 @@ const Projects = () => {
         </motion.div>
       </main>
 
-      {/* MODAL */}
       <AnimatePresence>
         {selectedPost && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[200] flex items-center justify-center bg-black/95 p-4 md:p-10 backdrop-blur-xl"
+            className="fixed inset-0 z-[200] flex items-center justify-center bg-canvas/95 p-4 md:p-10 backdrop-blur-xl"
             onClick={() => setSelectedPost(null)}
           >
             <button
-              className="absolute top-10 right-10 text-neutral-500 hover:text-white transition-colors z-50 cursor-pointer focus:outline-none"
+              className="absolute top-10 right-10 text-fg-muted hover:text-fg transition-colors z-50 cursor-pointer focus:outline-none"
               onClick={() => setSelectedPost(null)}
               aria-label="Close preview"
             >
@@ -300,19 +286,6 @@ const Projects = () => {
           </motion.div>
         )}
       </AnimatePresence>
-
-      <style
-        dangerouslySetInnerHTML={{
-          __html: `
-            body { background-color: #050505; }
-            ::-webkit-scrollbar { width: 4px; }
-            ::-webkit-scrollbar-track { background: #000; }
-            ::-webkit-scrollbar-thumb { background: #222; border-radius: 10px; }
-            ::-webkit-scrollbar-thumb:hover { background: #444; }
-            .break-inside-avoid { break-inside: avoid; }
-          `,
-        }}
-      />
     </div>
   );
 };

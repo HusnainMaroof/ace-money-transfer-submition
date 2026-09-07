@@ -30,7 +30,7 @@ const MarqueeRow: React.FC<MarqueeRowProps> = ({
   opacity = 1,
   fontSize = "text-5xl lg:text-7xl",
   fontWeight = "font-bold",
-  iconColor = "text-blue-500",
+  iconColor = "text-accent",
 }) => {
   const isLeft = direction === "left";
 
@@ -55,7 +55,7 @@ const MarqueeRow: React.FC<MarqueeRowProps> = ({
             className="flex items-center gap-12 lg:gap-16"
           >
             <span
-              className={`${fontSize} ${fontWeight} tracking-tighter text-white select-none`}
+              className={`${fontSize} ${fontWeight} tracking-tighter text-fg select-none`}
             >
               {item}
             </span>
@@ -71,9 +71,8 @@ const MarqueeRow: React.FC<MarqueeRowProps> = ({
 
 export default function InfiniteMarquee() {
   return (
-    <section className="relative bg-neutral-950 py-16 lg:py-24 overflow-hidden border-y border-white/5">
-      {/* Decorative center glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-4xl h-48 bg-blue-600/5 blur-[100px] rounded-full pointer-events-none" />
+    <section id="work" className="relative bg-canvas py-16 lg:py-24 overflow-hidden border-t border-b border-line">
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-4xl h-48 bg-accent/5 blur-[100px] rounded-full pointer-events-none" />
 
       <MarqueeRow
         items={expertise}
@@ -81,7 +80,7 @@ export default function InfiniteMarquee() {
         speed={25}
         fontSize="text-6xl lg:text-8xl"
         fontWeight="font-black"
-        iconColor="text-blue-500"
+        iconColor="text-accent"
       />
 
       <MarqueeRow
@@ -91,7 +90,7 @@ export default function InfiniteMarquee() {
         opacity={0.3}
         fontSize="text-4xl lg:text-6xl"
         fontWeight="font-light"
-        iconColor="text-emerald-400"
+        iconColor="text-accent"
       />
 
       <MarqueeRow
@@ -101,12 +100,11 @@ export default function InfiniteMarquee() {
         opacity={0.6}
         fontSize="text-5xl lg:text-7xl"
         fontWeight="font-medium"
-        iconColor="text-purple-500"
+        iconColor="text-accent"
       />
 
-      {/* Side gradients */}
-      <div className="absolute inset-y-0 left-0 w-24 md:w-64 bg-gradient-to-r from-neutral-950 via-neutral-950/90 to-transparent z-10 pointer-events-none" />
-      <div className="absolute inset-y-0 right-0 w-24 md:w-64 bg-gradient-to-l from-neutral-950 via-neutral-950/90 to-transparent z-10 pointer-events-none" />
+      <div className="absolute inset-y-0 left-0 w-24 md:w-64 bg-gradient-to-r from-canvas via-canvas/90 to-transparent z-10 pointer-events-none" />
+      <div className="absolute inset-y-0 right-0 w-24 md:w-64 bg-gradient-to-l from-canvas via-canvas/90 to-transparent z-10 pointer-events-none" />
     </section>
   );
 }

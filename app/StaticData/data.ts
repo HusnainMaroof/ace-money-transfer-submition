@@ -1,20 +1,6 @@
-export type PostCategory = "logo" | "thumbnail" | "motion";
+import type { PostGroup, Terminal } from "./types";
 
-export type Post = {
-  id: number;
-  type: "image" | "video";
-  src: string;
-  likes: string;
-  caption: string;
-  category: PostCategory;
-  res?: "1080x1920" | "1920x1080" | "1080x1440";
-};
-
-export type PostGroup = {
-  projectId: number;
-  projectName: string;
-  posts: Post[];
-};
+export type { Post, PostCategory, PostGroup, Terminal } from "./types";
 
 export const POST_GROUPS: PostGroup[] = [
   {
@@ -29,14 +15,13 @@ export const POST_GROUPS: PostGroup[] = [
         likes: "0",
         caption: "Brand logo",
       },
-
       {
         id: 1,
         type: "image",
         category: "thumbnail",
         src: "/photos/img1.png",
         likes: "4.2k",
-        caption: "Clean lines and natural light. 🏛️✨ #architecture",
+        caption: "Clean lines and natural light. #architecture",
       },
       {
         id: 2,
@@ -52,7 +37,7 @@ export const POST_GROUPS: PostGroup[] = [
         category: "thumbnail",
         src: "/photos/img2.png",
         likes: "3.8k",
-        caption: "Interior details that matter. 🛋️",
+        caption: "Interior details that matter.",
       },
       {
         id: 4,
@@ -78,7 +63,6 @@ export const POST_GROUPS: PostGroup[] = [
         likes: "5.1k",
         caption: "Concrete and wood textures blending seamlessly.",
       },
-
       {
         id: 7,
         type: "video",
@@ -111,14 +95,13 @@ export const POST_GROUPS: PostGroup[] = [
         likes: "0",
         caption: "Brand logo",
       },
-
       {
         id: 1,
         type: "image",
         category: "thumbnail",
         src: "https://res.cloudinary.com/dwtskde96/image/upload/v1776779688/Artboard_3_vazv6f.jpg",
         likes: "4.2k",
-        caption: "Clean lines and natural light. 🏛️✨ #architecture",
+        caption: "Clean lines and natural light.",
         res: "1080x1440",
       },
       {
@@ -137,7 +120,7 @@ export const POST_GROUPS: PostGroup[] = [
         src: "https://res.cloudinary.com/dwtskde96/image/upload/v1776779688/Artboard_2_mbuz7f.jpg",
         likes: "3.8k",
         res: "1080x1440",
-        caption: "Interior details that matter. 🛋️",
+        caption: "Interior details that matter.",
       },
       {
         id: 4,
@@ -166,7 +149,6 @@ export const POST_GROUPS: PostGroup[] = [
         res: "1080x1440",
         caption: "Concrete and wood textures blending seamlessly.",
       },
-
       {
         id: 7,
         type: "image",
@@ -186,7 +168,7 @@ export const POST_GROUPS: PostGroup[] = [
         caption: "Horizontal motion study - Abstract flows.",
       },
       {
-        id: 8,
+        id: 9,
         type: "image",
         category: "thumbnail",
         src: "https://res.cloudinary.com/dwtskde96/image/upload/v1776779689/Artboard_4_nnx2p8.jpg",
@@ -195,7 +177,7 @@ export const POST_GROUPS: PostGroup[] = [
         caption: "Horizontal motion study - Abstract flows.",
       },
       {
-        id: 9,
+        id: 10,
         type: "image",
         category: "thumbnail",
         src: "https://res.cloudinary.com/dwtskde96/image/upload/v1776779689/Artboard_13_purbr0.jpg",
@@ -207,22 +189,10 @@ export const POST_GROUPS: PostGroup[] = [
   },
 ];
 
-export type Terminal = {
-  id: number;
-  name: string;
-  code: string;
-  password: string;
-  logoImg: string;
-  route: string;
-  projectId: number;
-};
-
-// --- Mock Data ---
-
 export const VAULT_TERMINALS: Terminal[] = [
   {
     id: 1,
-    name: "Ace Money transfer",
+    name: "Ace Money Transfer",
     code: "TRX-01",
     password: "ace1",
     route: "/project/Acemoneytransfer",
